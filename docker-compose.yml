@@ -1,0 +1,19 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile # your dev Dockerfile
+    command: npm run dev # assumes "dev": "nodemon --watch src --ext ts --exec ts-node ./src/index.ts"
+    ports:
+      - "3030:3030"
+    environment:
+      NODE_ENV: development
+      DEBUG: "*"
+      # If file changes aren't detected on Mac/Windows, uncomment:
+      # CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - .:/app:cached # live code -> container
+      - node_modules:/app/node_modules # keep container deps intact
+
+volumes:
+  node_modules:
