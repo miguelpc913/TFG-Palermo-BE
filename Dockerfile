@@ -1,12 +1,8 @@
-FROM node:lts-alpine
-
+FROM node:20-bullseye
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install
-
+# keep devDependencies for dev image:
+RUN npm ci
 COPY . .
-
-EXPOSE 3030
-
-CMD ["npm", "run", "dev"]
+# optional: EXPOSE 3030
+CMD ["npm","run","dev"]

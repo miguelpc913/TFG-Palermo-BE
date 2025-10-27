@@ -1,19 +1,58 @@
+version: "3.9"
+
 services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile # your dev Dockerfile
-    command: npm run dev # assumes "dev": "nodemon --watch src --ext ts --exec ts-node ./src/index.ts"
+      dockerfile: Dockerfile
+    command: npm run dev # e.g. "nodemon --watch src --ext ts,tsx --exec \"tsx src/index.ts\""
     ports:
-      - "3030:3030"
+      - "${PORT:-3030}:3030"
     environment:
-      NODE_ENV: development
-      DEBUG: "*"
-      # If file changes aren't detected on Mac/Windows, uncomment:
+      # --- Common ---
+      PORT: "${PORT:-3030}"
+      NODE_ENV: "${NODE_ENV:-development}"
+
+      # --- Database (override these in production) ---
+      DB_HOST: "${DB_HOST:-postgres}" # local service name for dev
+      DB_PORT: "${DB_PORT:-5432}"
+      DB_USER: "${DB_USER:-postgres}"
+      DB_PASSWORD: "${DB_PASSWORD:-postgres}"
+      DB_NAME: "${DB_NAME:-automerge_repo}"
+      DB_SSLMODE: "${DB_SSLMODE:-disable}" # require for Neon
+
+      # optional: if your adapter supports it
+      # DATABASE_URL: ${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/automerge_repo}
+
+      # --- Live reload helpers ---
       # CHOKIDAR_USEPOLLING: "true"
+
     volumes:
-      - .:/app:cached # live code -> container
-      - node_modules:/app/node_modules # keep container deps intact
+      - .:/app:cached
+      - node_modules:/app/node_modules
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: automerge_repo
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d automerge_repo"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
 
 volumes:
   node_modules:
+  pgdata:

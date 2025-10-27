@@ -1,15 +1,12 @@
 // tsconfig.json
 {
   "compilerOptions": {
-    "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "target": "ES2022",
     "strict": true,
-    "esModuleInterop": true,
-    "types": [
-      "node"
-    ],
-    "skipLibCheck": false
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "include": [
     "src"

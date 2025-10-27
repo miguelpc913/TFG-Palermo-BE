@@ -1,3 +1,4 @@
-import { Server } from "./server.js"
+import { createSyncServer } from "./server.js"
 
-new Server()
+const srv = createSyncServer()
+srv.start()
