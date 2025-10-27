@@ -59,6 +59,7 @@ export function createSyncServer(deps: ServerDeps = {}): RunningServer {
   // Wire HTTP → WS upgrade
   httpServer.on("upgrade", (request: IncomingMessage, socket, head) => {
     wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
+      console.log("new socket client")
       wss.emit("connection", ws, request)
     })
   })
