@@ -1,17 +1,19 @@
 {
   "name": "@automerge/automerge-repo-sync-server",
   "version": "0.3.0",
-  "main": "src/index.js",
-  "license": "MIT",
   "type": "module",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "license": "MIT",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts,tsx --exec \"tsx src/index.ts\""
+    "dev": "nodemon --watch src --ext ts,tsx --exec \"tsx src/index.ts\"",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prepare": "npm run build"
   },
   "files": [
-    "src/index.js",
-    "src/server.js"
+    "dist"
   ],
-  "bin": "./src/index.js",
   "dependencies": {
     "@automerge/automerge": "^3.0.0",
     "@automerge/automerge-repo": "^2.1.0",
