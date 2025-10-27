@@ -1,28 +1,16 @@
+// tsconfig.json
 {
   "compilerOptions": {
-    "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "dist",
-    "rootDir": "src",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "target": "ES2022",
     "strict": true,
     "skipLibCheck": true,
-    "sourceMap": true,
-    "declaration": false,
-    "preserveSymlinks": true,
-    "preserveWatchOutput": true,
-    "preserveValueImports": true,
-    "stripInternal": false,
-    "newLine": "lf",
-    "removeComments": false,
-    "noEmitOnError": true,
-    "preserveConstEnums": true,
-    "useDefineForClassFields": false,
-    "downlevelIteration": false,
-    "importsNotUsedAsValues": "remove"
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true, // helpful in prod with --enable-source-maps
+    "noEmitOnError": true // fail builds if TS has errors
   },
   "include": [
     "src"

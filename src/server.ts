@@ -13,7 +13,6 @@ import {
 import { NodeWSServerAdapter } from "@automerge/automerge-repo-network-websocket"
 import type { WebSocketServer as IsoWSS } from "isomorphic-ws"
 import { PostgresStorageAdapter } from "./PostgresStorageAdapter.js"
-import { NodeFSStorageAdapter } from "./NodeFileSystemAdapter.js"
 
 type ServerDeps = {
   port?: number

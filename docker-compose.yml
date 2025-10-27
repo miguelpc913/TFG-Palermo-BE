@@ -21,12 +21,6 @@ services:
       DB_NAME: "${DB_NAME:-automerge_repo}"
       DB_SSLMODE: "${DB_SSLMODE:-disable}" # require for Neon
 
-      # optional: if your adapter supports it
-      # DATABASE_URL: ${DATABASE_URL:-postgres://postgres:postgres@postgres:5432/automerge_repo}
-
-      # --- Live reload helpers ---
-      # CHOKIDAR_USEPOLLING: "true"
-
     volumes:
       - .:/app:cached
       - node_modules:/app/node_modules

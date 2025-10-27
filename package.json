@@ -8,8 +8,7 @@
   "scripts": {
     "dev": "nodemon --watch src --ext ts,tsx --exec \"tsx src/index.ts\"",
     "build": "tsc",
-    "start": "node dist/index.js",
-    "prepare": "npm run build"
+    "start": "node dist/index.js"
   },
   "files": [
     "dist"
