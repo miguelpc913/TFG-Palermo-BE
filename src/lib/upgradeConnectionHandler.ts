@@ -8,7 +8,7 @@ import { WebSocket, WebSocketServer } from "ws"
 const upgradeConnectionHandler = async (
   request: http.IncomingMessage,
   socket: Stream.Duplex,
-  head: Buffer<ArrayBufferLike>,
+  head: Buffer,
   wss: WebSocketServer,
 ) => {
   try {
