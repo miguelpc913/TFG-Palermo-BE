@@ -14,7 +14,8 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS ?? "")
 // e.g. CORS_ORIGINS="https://tfg-palermo-fe-1.onrender.com,http://localhost:1420"
 
 const corsOptions: cors.CorsOptions = {
-  origin: ALLOWED_ORIGINS, // <— array form; cors handles matching
+  // origin: ALLOWED_ORIGINS, // <— array form; cors handles matching
+  origin: "*", // <— array form; cors handles matching
   credentials: false, // set true only if you use cookies
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: [
