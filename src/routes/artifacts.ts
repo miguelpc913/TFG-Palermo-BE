@@ -24,8 +24,12 @@ const router = Router()
 const { getArtifacts } = artifactService()
 
 router.get("/", async (_req, res) => {
-  const artifactRequest = getArtifacts()
-  res.status(500).json(artifactRequest)
+  try {
+    const artifactRequest = await getArtifacts()
+    res.status(200).json(artifactRequest)
+  } catch (e) {
+    res.status(500).json(e)
+  }
 })
 
 export default router
