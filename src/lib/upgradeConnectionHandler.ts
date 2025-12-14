@@ -4,6 +4,7 @@ import { verifyJwt } from "./jwt.js"
 import http from "http"
 import Stream from "node:stream"
 import { WebSocket, WebSocketServer } from "ws"
+import { cbor } from "@automerge/automerge-repo"
 
 const upgradeConnectionHandler = async (
   request: http.IncomingMessage,
@@ -31,6 +32,7 @@ const upgradeConnectionHandler = async (
 
         // @ts-expect-error attach user info on websocket
         ws.user = request.user
+        ws.send(cbor.encode({ type: "joined" }))
         wss.emit("connection", ws, request)
         console.log("connected")
       } catch (e) {
@@ -40,14 +42,6 @@ const upgradeConnectionHandler = async (
       const errorMessage = err instanceof Error ? err.message : String(err)
       console.log(errorMessage)
       ws.close(1008, errorMessage)
-      // socket.write(
-      //   "HTTP/1.1 401 Unauthorized\r\n" +
-      //     "Connection: close\r\n" +
-      //     "Content-Type: text/plain\r\n" +
-      //     "\r\n" +
-      //     "Unauthorized websocket upgrade\n",
-      // )
-      // socket.destroy()
     }
   })
 }
