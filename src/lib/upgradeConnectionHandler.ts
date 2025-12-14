@@ -11,33 +11,46 @@ const upgradeConnectionHandler = async (
   head: Buffer,
   wss: WebSocketServer,
 ) => {
-  try {
-    // Accept token via query (?token=) or Sec-WebSocket-Protocol: bearer,<token>
-    const { searchParams } = new url.URL(request.url!, "http://localhost")
-    let token = searchParams.get("token")
+  wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
+    try {
+      // Accept token via query (?token=) or Sec-WebSocket-Protocol: bearer,<token>
+      const { searchParams } = new url.URL(request.url!, "http://localhost")
+      let token = searchParams.get("token")
 
-    if (!token) {
-      const proto = request.headers["sec-websocket-protocol"]
-      if (typeof proto === "string") {
-        token = proto.split(",")[1].trim()
+      if (!token) {
+        const proto = request.headers["sec-websocket-protocol"]
+        if (typeof proto === "string") {
+          token = proto.split(",")[1].trim()
+        }
       }
-    }
+      try {
+        if (!token) throw new Error("Missing token")
+        const payload = verifyJwt(token) // throws if invalid
+      } catch (e) {
+        throw new Error("Auth error")
+      }
 
-    if (!token) throw new Error("Missing token")
-    const payload = verifyJwt(token) // throws if invalid
-    // @ts-expect-error Stash user info on request for use in 'connection' handler
-    request.user = { id: payload.sub, email: payload.email }
+      // @ts-expect-error Stash user info on request for use in 'connection' handler
+      request.user = { id: payload.sub, email: payload.email }
 
-    wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
       // @ts-expect-error attach user info on websocket
       ws.user = request.user
       wss.emit("connection", ws, request)
       console.log("connected")
-    })
-  } catch {
-    socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n")
-    socket.destroy()
-  }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err)
+      console.log(errorMessage)
+      ws.close(1008, errorMessage)
+      // socket.write(
+      //   "HTTP/1.1 401 Unauthorized\r\n" +
+      //     "Connection: close\r\n" +
+      //     "Content-Type: text/plain\r\n" +
+      //     "\r\n" +
+      //     "Unauthorized websocket upgrade\n",
+      // )
+      // socket.destroy()
+    }
+  })
 }
 
 export default upgradeConnectionHandler

@@ -4,7 +4,7 @@ import type {
   StorageKey,
 } from "@automerge/automerge-repo"
 import { Pool, type PoolClient } from "pg"
-import makePoolFromEnv from "./lib/makePoolFromEnv.js"
+import makePoolFromEnv from "./makePoolFromEnv.js"
 
 // ---- helpers: encode/decode each key segment so "/" never collides
 const segEncode = (s: string) => encodeURIComponent(s)

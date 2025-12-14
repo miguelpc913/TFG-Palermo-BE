@@ -2,7 +2,7 @@ import http from "http"
 import { WebSocket, WebSocketServer } from "ws"
 import { once } from "events"
 import { createApp } from "./express.js"
-import initAutomergeRepo from "./initAutomergeRepo.js"
+import initAutomergeRepo from "./lib/initAutomergeRepo.js"
 import upgradeConnectionHandler from "./lib/upgradeConnectionHandler.js"
 
 export type RunningServer = {
@@ -13,7 +13,16 @@ export type RunningServer = {
 
 export function createSyncServer(): RunningServer {
   const port = process.env.PORT ? Number(process.env.PORT) : 3030
-  const wss = new WebSocketServer({ noServer: true })
+  const wss = new WebSocketServer({
+    noServer: true,
+    handleProtocols: (protocols, req) => {
+      // Client offers ["bearer", "<jwt>"].
+      // We MUST select ONE protocol string to echo back.
+      if (protocols.has("bearer")) return "bearer"
+      // If you ever add other protocols, select them here.
+      return false // no acceptable subprotocol -> reject
+    },
+  })
   const repo = initAutomergeRepo(wss)
   const app = createApp(repo)
   const httpServer = http.createServer(app)
