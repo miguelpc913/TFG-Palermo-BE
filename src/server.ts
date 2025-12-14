@@ -4,6 +4,7 @@ import { once } from "events"
 import { createApp } from "./express.js"
 import initAutomergeRepo from "./lib/initAutomergeRepo.js"
 import upgradeConnectionHandler from "./lib/upgradeConnectionHandler.js"
+import { cbor } from "@automerge/automerge-repo"
 
 export type RunningServer = {
   start: () => Promise<void>
@@ -29,6 +30,17 @@ export function createSyncServer(): RunningServer {
 
   httpServer.on("upgrade", (request, socket, head) => {
     upgradeConnectionHandler(request, socket, head, wss)
+  })
+  wss.on("connection", (ws) => {
+    ws.on("message", (data) => {
+      const msg = cbor.decode(
+        Buffer.isBuffer(data) ? data : Buffer.from(data as any),
+      )
+      if (msg?.type === "join") {
+        ws.send(Buffer.from(cbor.encode({ type: "joined" })))
+        return
+      }
+    })
   })
 
   let started = false

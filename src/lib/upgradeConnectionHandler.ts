@@ -4,7 +4,6 @@ import { verifyJwt } from "./jwt.js"
 import http from "http"
 import Stream from "node:stream"
 import { WebSocket, WebSocketServer } from "ws"
-import { cbor } from "@automerge/automerge-repo"
 
 const upgradeConnectionHandler = async (
   request: http.IncomingMessage,
@@ -32,9 +31,7 @@ const upgradeConnectionHandler = async (
 
         // @ts-expect-error attach user info on websocket
         ws.user = request.user
-        ws.send(cbor.encode({ type: "joined" }))
         wss.emit("connection", ws, request)
-        console.log("connected")
       } catch (e) {
         throw new Error("Auth error")
       }
