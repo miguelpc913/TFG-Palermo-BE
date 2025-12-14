@@ -26,17 +26,16 @@ const upgradeConnectionHandler = async (
       try {
         if (!token) throw new Error("Missing token")
         const payload = verifyJwt(token) // throws if invalid
+        // @ts-expect-error Stash user info on request for use in 'connection' handler
+        request.user = { id: payload.sub, email: payload.email }
+
+        // @ts-expect-error attach user info on websocket
+        ws.user = request.user
+        wss.emit("connection", ws, request)
+        console.log("connected")
       } catch (e) {
         throw new Error("Auth error")
       }
-
-      // @ts-expect-error Stash user info on request for use in 'connection' handler
-      request.user = { id: payload.sub, email: payload.email }
-
-      // @ts-expect-error attach user info on websocket
-      ws.user = request.user
-      wss.emit("connection", ws, request)
-      console.log("connected")
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err)
       console.log(errorMessage)
