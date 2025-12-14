@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 const SECRET = process.env.JWT_SECRET!
 const EXPIRES_IN = process.env.JWT_EXPIRES
 
-export type JwtPayload = { sub: string; email: string }
+export type JwtPayload = { sub: string; email: string; rootDocUrl: string }
 
 export function signJwt(payload: JwtPayload): string {
   const expiresIn = parseInt(EXPIRES_IN || "129000")

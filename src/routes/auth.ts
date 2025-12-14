@@ -25,14 +25,23 @@ authRouter.post("/login", async (req, res) => {
   const ok = await verifyPassword(password, user.password_hash)
   if (!ok) return res.status(401).json({ error: "invalid credentials" })
 
-  const token = signJwt({ sub: user.id, email: user.email })
-  res.json({ token, rootDocUrl: user.root_doc_url })
+  const token = signJwt({
+    sub: user.id,
+    email: user.email,
+    rootDocUrl: user.root_doc_url,
+  })
+  res.json({ token })
 })
 
-authRouter.post("/test", async (req, res) => {
-  const { token } = req.body ?? {}
-  const payload = verifyJwt(token) // throws if invalid
-  res.json(payload)
+authRouter.post("/verifyJwt", async (req, res) => {
+  const { token } = req.body
+  console.log(req.body)
+  try {
+    const payload = verifyJwt(token) // throws if invalid
+    res.json(payload)
+  } catch (e) {
+    res.status(401).json({ error: "Invalid token" })
+  }
 })
 
 /** OPTIONAL: POST /api/v1/auth/register
@@ -48,9 +57,13 @@ authRouter.post("/register", async (req, res) => {
     return res.status(409).json({ error: "email already registered" })
   const repo = req.app.locals.repo as Repo // typed access
   const password_hash = await hashPassword(password)
-  const rootDocUrl = await repo.create<Page>({ blocks: [{}], children: [] })
-  const user = await users.create(email, password_hash, rootDocUrl.url)
-  const token = signJwt({ sub: user.id, email: user.email })
+  const rootDoc = await repo.create<Page>({ blocks: [{}], children: [] })
+  const user = await users.create(email, password_hash, rootDoc.url)
+  const token = signJwt({
+    sub: user.id,
+    email: user.email,
+    rootDocUrl: rootDoc.url,
+  })
   res.status(201).json({ token, rootDocUrl: user.root_doc_url })
 })
 
