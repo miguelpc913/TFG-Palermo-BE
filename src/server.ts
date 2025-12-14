@@ -12,6 +12,14 @@ export type RunningServer = {
   ready: () => Promise<void>
 }
 
+export type SyncMessage = {
+  type: string
+  targetId: string
+  data: Uint8Array // or Buffer on Node
+  documentId: string
+  senderId: string
+}
+
 export function createSyncServer(): RunningServer {
   const port = process.env.PORT ? Number(process.env.PORT) : 3030
   const wss = new WebSocketServer({
@@ -35,7 +43,7 @@ export function createSyncServer(): RunningServer {
     ws.on("message", (data) => {
       const msg = cbor.decode(
         Buffer.isBuffer(data) ? data : Buffer.from(data as any),
-      )
+      ) as SyncMessage
       if (msg?.type === "join") {
         ws.send(Buffer.from(cbor.encode({ type: "joined" })))
         return
