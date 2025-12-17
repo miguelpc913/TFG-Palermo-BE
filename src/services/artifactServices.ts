@@ -21,7 +21,7 @@ const { GITHUB_TOKEN } = process.env
 export default function artifactService() {
   const getArtifacts = async () => {
     const actionsResponse = await fetch(
-      "https://api.github.com/repos/miguelpc913/TFG-Palermo-FE/actions/runs?per_page=1",
+      "https://api.github.com/repos/miguelpc913/TFG-Palermo-FE/actions/runs?per_page=1&status=success&event=push",
       {
         headers: {
           Authorization: `Bearer ${GITHUB_TOKEN}`,
